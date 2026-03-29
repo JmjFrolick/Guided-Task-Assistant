@@ -1,16 +1,73 @@
+const readline = require("readline");
 const taskManager = require("./taskManager");
 const scheduler = require("./scheduler");
 
-taskManager.addTask({ name: "Study algorithms", priority: 3, duration: 60 });
-taskManager.addTask({ name: "Gym", priority: 1, duration: 45 });
-taskManager.addTask({ name: "Assignment", priority: 5, duration: 120 });
+const rl = readline.createInterface({
+    input: process.stdin,
+    output: process.stdout
+});
 
-const tasks = taskManager.getTasks();
+function buildSchedule() {
+    const sortedMainTasks = scheduler.scheduleTasks(taskManager.getTasks());
+    const fullSchedule = [];
 
-console.log("Raw tasks:");
-console.log(tasks);
+    sortedMainTasks.forEach(task => {
+        const brokenDown = scheduler.breakTask(task);
+        fullSchedule.push(...brokenDown);
+    });
 
-const scheduled = scheduler.scheduleTasks(tasks);
+    if (scheduler.insertBreaks) {
+        return scheduler.insertBreaks(fullSchedule);
+    }
 
-console.log("\nScheduled tasks:");
-console.log(scheduled);
+    return fullSchedule;
+}
+
+function printSchedule() {
+    const scheduled = buildSchedule();
+
+    console.log("\n=== BROKEN-DOWN SCHEDULE ===");
+
+    if (scheduled.length === 0) {
+        console.log("No tasks added yet.\n");
+        return;
+    }
+
+    scheduled.forEach((task, index) => {
+        console.log(
+            `${index + 1}. ${task.name} - ${task.duration} min (priority ${task.priority})`
+        );
+    });
+
+    console.log();
+}
+
+function askTask() {
+    rl.question("Task name (or 'done'): ", (name) => {
+        if (name.toLowerCase() === "done") {
+            printSchedule();
+            rl.close();
+            return;
+        }
+
+        rl.question("Priority (1-5): ", (priority) => {
+            rl.question("Duration (minutes): ", (duration) => {
+                taskManager.addTask({
+                    name,
+                    priority: parseInt(priority),
+                    duration: parseInt(duration)
+                });
+
+                console.log("\nTask added.");
+                printSchedule();
+
+                askTask();
+            });
+        });
+    });
+}
+
+console.log("Guided Task Assistant");
+console.log("Enter your tasks and type 'done' when finished.\n");
+
+askTask();
