@@ -53,18 +53,15 @@ function breakTask(task) {
         return [
             {
                 name: `Gather materials and prepare for ${task.name}`,
-                duration: 5,
-                priority
+                duration: 5
             },
             {
                 name: `Focus on key concepts for ${task.name}`,
-                duration: Math.round(total * 0.30),
-                priority
+                duration: Math.round(total * 0.30)
             },
             {
                 name: `Practice examples for ${task.name}`,
-                duration: Math.round(total * 0.35),
-                priority
+                duration: Math.round(total * 0.35)
             },
             {
                 name: `Recap what you learned from ${task.name}`,
@@ -72,8 +69,7 @@ function breakTask(task) {
                     total -
                     5 -
                     Math.round(total * 0.30) -
-                    Math.round(total * 0.35),
-                priority
+                    Math.round(total * 0.35)
             }
         ];
     }
@@ -82,18 +78,15 @@ function breakTask(task) {
         return [
             {
                 name: `Understand requirements for ${task.name}`,
-                duration: Math.round(total * 0.20),
-                priority
+                duration: Math.round(total * 0.20)
             },
             {
                 name: `Plan approach for ${task.name}`,
-                duration: Math.round(total * 0.20),
-                priority
+                duration: Math.round(total * 0.20)
             },
             {
                 name: `Implement ${task.name}`,
-                duration: Math.round(total * 0.40),
-                priority
+                duration: Math.round(total * 0.40)
             },
             {
                 name: `Test and debug ${task.name}`,
@@ -102,7 +95,6 @@ function breakTask(task) {
                     Math.round(total * 0.20) -
                     Math.round(total * 0.20) -
                     Math.round(total * 0.40),
-                priority
             }
         ];
     }
@@ -112,17 +104,14 @@ function breakTask(task) {
             {
                 name: `Brainstorm ideas for ${task.name}`,
                 duration: Math.round(total * 0.20),
-                priority
             },
             {
                 name: `Create an outline for ${task.name}`,
                 duration: Math.round(total * 0.20),
-                priority
             },
             {
                 name: `Write the main draft for ${task.name}`,
                 duration: Math.round(total * 0.40),
-                priority
             },
             {
                 name: `Revise and improve ${task.name}`,
@@ -131,7 +120,6 @@ function breakTask(task) {
                     Math.round(total * 0.20) -
                     Math.round(total * 0.20) -
                     Math.round(total * 0.40),
-                priority
             }
         ];
     }
@@ -140,18 +128,15 @@ function breakTask(task) {
         return [
             {
                 name: `Prepare supplies for ${task.name}`,
-                duration: Math.round(total * 0.15),
-                priority
+                duration: Math.round(total * 0.15)
             },
             {
                 name: `Clear clutter for ${task.name}`,
-                duration: Math.round(total * 0.30),
-                priority
+                duration: Math.round(total * 0.30)
             },
             {
                 name: `Do the main cleaning for ${task.name}`,
-                duration: Math.round(total * 0.35),
-                priority
+                duration: Math.round(total * 0.35)
             },
             {
                 name: `Final tidy-up for ${task.name}`,
@@ -159,8 +144,7 @@ function breakTask(task) {
                     total -
                     Math.round(total * 0.15) -
                     Math.round(total * 0.30) -
-                    Math.round(total * 0.35),
-                priority
+                    Math.round(total * 0.35)
             }
         ];
     }
@@ -168,18 +152,15 @@ function breakTask(task) {
     return [
         {
             name: `Understand what is needed for ${task.name}`,
-            duration: Math.round(total * 0.20),
-            priority
+            duration: Math.round(total * 0.20)
         },
         {
             name: `Start the first part of ${task.name}`,
-            duration: Math.round(total * 0.30),
-            priority
+            duration: Math.round(total * 0.30)
         },
         {
             name: `Continue working on ${task.name}`,
-            duration: Math.round(total * 0.30),
-            priority
+            duration: Math.round(total * 0.30)
         },
         {
             name: `Finish and review ${task.name}`,
@@ -187,16 +168,47 @@ function breakTask(task) {
                 total -
                 Math.round(total * 0.20) -
                 Math.round(total * 0.30) -
-                Math.round(total * 0.30),
-            priority
+                Math.round(total * 0.30)
         }
     ];
 }
 
-function scheduleTasks(tasks) {
-    return tasks.slice().sort((a, b) => {
-        return b.priority - a.priority;
+function insertBreaks(tasks) {
+    const result = [];
+    let workTime = 0;
+    const breakInterval = 90; 
+
+    const breakMessages = [
+        "Remember to take a short break",
+        "Consider taking a short break to reset",
+        "A short break could help you recharge"
+    ];
+
+    let breakIndex = 0;
+
+    tasks.forEach(task => {
+        result.push(task);
+
+        if (task.duration) {
+            workTime += task.duration;
+        }
+
+        if (workTime >= breakInterval) {
+            result.push({
+                name: breakMessages[breakIndex % breakMessages.length],
+                isBreak: true
+            });
+
+            breakIndex++;
+            workTime = 0;
+        }
     });
+
+    return result;
 }
 
-module.exports = { detectIntent, breakTask, scheduleTasks };
+function scheduleTasks(tasks) {
+    return tasks.slice();
+}
+
+module.exports = { detectIntent, breakTask, scheduleTasks, insertBreaks };

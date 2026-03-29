@@ -16,11 +16,7 @@ function buildSchedule() {
         fullSchedule.push(...brokenDown);
     });
 
-    if (scheduler.insertBreaks) {
-        return scheduler.insertBreaks(fullSchedule);
-    }
-
-    return fullSchedule;
+    return scheduler.insertBreaks(fullSchedule);
 }
 
 function printSchedule() {
@@ -34,9 +30,11 @@ function printSchedule() {
     }
 
     scheduled.forEach((task, index) => {
-        console.log(
-            `${index + 1}. ${task.name} - ${task.duration} min (priority ${task.priority})`
-        );
+        if (task.isBreak) {
+            console.log(`   → ${task.name}`);
+        } else {
+            console.log(`${index + 1}. ${task.name} - ${task.duration} min`);
+        }
     });
 
     console.log();
@@ -50,19 +48,16 @@ function askTask() {
             return;
         }
 
-        rl.question("Priority (1-5): ", (priority) => {
-            rl.question("Duration (minutes): ", (duration) => {
-                taskManager.addTask({
-                    name,
-                    priority: parseInt(priority),
-                    duration: parseInt(duration)
-                });
-
-                console.log("\nTask added.");
-                printSchedule();
-
-                askTask();
+        rl.question("Duration (minutes): ", (duration) => {
+            taskManager.addTask({
+                name,
+                duration: Number(duration)
             });
+
+            console.log("\nTask added.");
+            printSchedule();
+
+            askTask();
         });
     });
 }
