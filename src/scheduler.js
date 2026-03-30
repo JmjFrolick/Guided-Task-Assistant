@@ -1,3 +1,5 @@
+
+// uses keywords to detect intents from the user
 function detectIntent(taskName) {
     const name = taskName.toLowerCase();
 
@@ -94,8 +96,10 @@ function detectIntent(taskName) {
     return "general";
 }
 
+// breaks tasks down into smaller subtasks and assigns a fraction of the task's duration to
+// each subtask
 function breakTask(task) {
-    const intent = detectIntent(task.name);
+    const intent = detectIntent(task.name); // detects intent
     const total = task.duration;
 
     if (intent === "learning") {
@@ -395,6 +399,7 @@ function breakTask(task) {
     ];
 }
 
+// adds a reminder to take a break after 90 minutes worth of tasks in the schedule
 function insertBreaks(tasks) {
     const result = [];
     let workTime = 0;
@@ -408,6 +413,7 @@ function insertBreaks(tasks) {
 
     let breakIndex = 0;
 
+    // loops through tasks and adds break messages whenever the break interval is surpassed
     tasks.forEach(task => {
         result.push(task);
 
