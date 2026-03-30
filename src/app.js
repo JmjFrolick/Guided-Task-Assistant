@@ -7,16 +7,16 @@ const rl = readline.createInterface({
     output: process.stdout
 });
 
-function buildSchedule() {
-    const sortedMainTasks = scheduler.scheduleTasks(taskManager.getTasks());
-    const fullSchedule = [];
-
-    sortedMainTasks.forEach(task => {
-        const brokenDown = scheduler.breakTask(task);
-        fullSchedule.push(...brokenDown);
+async function buildSchedule() {
+    const response = await fetch("/schedule", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ tasks })
     });
 
-    return scheduler.insertBreaks(fullSchedule);
+    return await response.json();
 }
 
 function printSchedule() {

@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guided Task Assistant</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Guided Task Assistant</h1>
+        <p class="subtitle">Add tasks in the order you want to complete them.</p>
+
+        <div class="card">
+            <label for="taskName">Task name</label>
+            <input type="text" id="taskName" placeholder="Example: Study for calculus exam">
+
+            <label for="taskDuration">Duration (minutes)</label>
+            <input type="number" id="taskDuration" placeholder="Example: 120">
+
+            <button id="addTaskBtn">Add Task</button>
+
+            <button id="completeStepBtn">Complete Current Step</button>
+        </div>
+
+        <div class="card">
+            <h2>Current Task</h2>
+            <ul id="taskList"></ul>
+        </div>
+
+        <div class="card">
+            <h2>Broken-Down Schedule</h2>
+            <ul id="scheduleList"></ul>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

@@ -6,7 +6,8 @@ function detectIntent(taskName) {
         name.includes("read") ||
         name.includes("learn") ||
         name.includes("review") ||
-        name.includes("exam")
+        name.includes("exam") ||
+        name.includes("test")
     ) {
         return "learning";
     }
@@ -34,7 +35,6 @@ function detectIntent(taskName) {
     if (
         name.includes("clean") ||
         name.includes("organize") ||
-        name.includes("laundry") ||
         name.includes("room") ||
         name.includes("desk")
     ) {
@@ -53,7 +53,7 @@ function breakTask(task) {
         return [
             {
                 name: `Gather materials and prepare for ${task.name}`,
-                duration: 5
+                duration: Math.round(total * 0.10)
             },
             {
                 name: `Focus on key concepts for ${task.name}`,
@@ -67,7 +67,7 @@ function breakTask(task) {
                 name: `Recap what you learned from ${task.name}`,
                 duration:
                     total -
-                    5 -
+                    Math.round(total * 0.10) - 
                     Math.round(total * 0.30) -
                     Math.round(total * 0.35)
             }
@@ -139,7 +139,7 @@ function breakTask(task) {
                 duration: Math.round(total * 0.35)
             },
             {
-                name: `Final tidy-up for ${task.name}`,
+                name: `Put away supplies and final tidy-up ${task.name}`,
                 duration:
                     total -
                     Math.round(total * 0.15) -
@@ -151,15 +151,15 @@ function breakTask(task) {
 
     return [
         {
-            name: `Understand what is needed for ${task.name}`,
+            name: `Gather materials needed for ${task.name}`,
             duration: Math.round(total * 0.20)
         },
         {
-            name: `Start the first part of ${task.name}`,
+            name: `Devise a plan for ${task.name}`,
             duration: Math.round(total * 0.30)
         },
         {
-            name: `Continue working on ${task.name}`,
+            name: `Begin working on ${task.name}`,
             duration: Math.round(total * 0.30)
         },
         {
