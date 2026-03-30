@@ -47,7 +47,6 @@ function detectIntent(taskName) {
 function breakTask(task) {
     const intent = detectIntent(task.name);
     const total = task.duration;
-    const priority = task.priority;
 
     if (intent === "learning") {
         return [
