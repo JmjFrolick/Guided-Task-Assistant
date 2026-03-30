@@ -72,8 +72,6 @@ function detectIntent(taskName) {
         name.includes("plan") ||
         name.includes("planning") ||
         name.includes("schedule") ||
-        name.includes("organize day") ||
-        name.includes("organize week") ||
         name.includes("to-do list")
     ) {
         return "planning";
@@ -230,7 +228,7 @@ function breakTask(task) {
                 parentTask: task.name
             },
             {
-                name: `Move through the main laundry steps for ${task.name}`,
+                name: `Hang or put clean clothes in the dryer for ${task.name}`,
                 duration: Math.round(total * 0.30),
                 parentTask: task.name
             },
@@ -288,6 +286,11 @@ function breakTask(task) {
                 parentTask: task.name
             },
             {
+                name: `Take a short break for ${task.name}`,
+                duration: Math.round(total * 0.05),
+                parentTask: task.name
+            },
+            {
                 name: `Continue the main workout for ${task.name}`,
                 duration: Math.round(total * 0.35),
                 parentTask: task.name
@@ -298,6 +301,7 @@ function breakTask(task) {
                     total -
                     Math.round(total * 0.20) -
                     Math.round(total * 0.30) -
+                    Math.round(total * 0.05) -
                     Math.round(total * 0.35),
                 parentTask: task.name
             }
@@ -425,8 +429,4 @@ function insertBreaks(tasks) {
     return result;
 }
 
-function scheduleTasks(tasks) {
-    return tasks.slice();
-}
-
-module.exports = { detectIntent, breakTask, scheduleTasks, insertBreaks };
+module.exports = { detectIntent, breakTask, insertBreaks };

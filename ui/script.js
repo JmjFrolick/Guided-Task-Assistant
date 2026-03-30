@@ -38,18 +38,15 @@ async function buildSchedule() {
 function renderTasks() {
     taskList.innerHTML = "";
 
-    const currentTask = tasks.find(task => {
-        return (task.currentStep || 0) < (task.totalSteps || 1);
-    });
-
     const li = document.createElement("li");
 
-    if (!currentTask) {
+    if (tasks.length === 0) {
         li.textContent = "No current task.";
         taskList.appendChild(li);
         return;
     }
 
+    const currentTask = tasks[0];
     li.textContent = currentTask.currentStepName || currentTask.name;
     taskList.appendChild(li);
 }
@@ -61,28 +58,36 @@ async function renderSchedule() {
     let stepNumber = 1;
 
     tasks.forEach(task => {
-        const remainingSteps = schedule.filter(
+        const allStepsForTask = schedule.filter(
             item => !item.isBreak && item.parentTask === task.name
         );
 
+        const completed = task.completedSteps || 0;
+        const remainingSteps = allStepsForTask.slice(completed);
+
         if (remainingSteps.length > 0) {
             task.currentStepName = remainingSteps[0].name;
-            task.totalSteps = (task.completedSteps || 0) + remainingSteps.length;
+            task.totalSteps = allStepsForTask.length;
+        } else {
+            task.currentStepName = null;
+            task.totalSteps = allStepsForTask.length;
         }
     });
 
-    schedule.forEach(item => {
-        const li = document.createElement("li");
+    tasks.forEach(task => {
+        const allStepsForTask = schedule.filter(
+            item => !item.isBreak && item.parentTask === task.name
+        );
 
-        if (item.isBreak) {
-            li.textContent = `→ ${item.name}`;
-            li.classList.add("break-message");
-        } else {
-            li.textContent = `${stepNumber}. ${item.name} - ${item.duration} min`;
+        const completed = task.completedSteps || 0;
+        const remainingSteps = allStepsForTask.slice(completed);
+
+        remainingSteps.forEach(step => {
+            const li = document.createElement("li");
+            li.textContent = `${stepNumber}. ${step.name} - ${step.duration} min`;
+            scheduleList.appendChild(li);
             stepNumber++;
-        }
-
-        scheduleList.appendChild(li);
+        });
     });
 
     renderTasks();
@@ -100,7 +105,6 @@ addTaskBtn.addEventListener("click", async () => {
     const newTask = {
         name,
         duration,
-        currentStep: 0,
         completedSteps: 0
     };
 
@@ -129,20 +133,22 @@ completeStepBtn.addEventListener("click", async () => {
     firstTask.completedSteps = (firstTask.completedSteps || 0) + 1;
 
     const schedule = await buildSchedule();
-    const remainingForFirstTask = schedule.filter(
+    const allStepsForFirstTask = schedule.filter(
         item => !item.isBreak && item.parentTask === firstTask.name
     );
 
-    if (remainingForFirstTask.length === 0) {
-    await fetch("/tasks/0", {
-        method: "DELETE"
-    });
+    const remainingForFirstTask = allStepsForFirstTask.slice(firstTask.completedSteps);
 
-    tasks.shift();
-    await renderSchedule();
-    return;
-}
+    if (remainingForFirstTask.length === 0) {
+        await fetch("/tasks/0", {
+            method: "DELETE"
+        });
+
+        tasks.shift();
+        await renderSchedule();
+        return;
+    }
 
     firstTask.currentStepName = remainingForFirstTask[0].name;
-    renderTasks();
+    await renderSchedule();
 });
